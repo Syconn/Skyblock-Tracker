@@ -2,7 +2,7 @@ import { useState } from 'react';
 import './App.css'
 import { generateBazarFlips, type BazarResponse } from './Pages/Bazaar';
 import { nameMapper, type ItemsResponse } from './Pages/Items';
-import { loadJSON, money } from './util/Utils';
+import { loadJSON } from './util/Utils';
 import { ItemList } from './util/Components';
 
 function App() {
