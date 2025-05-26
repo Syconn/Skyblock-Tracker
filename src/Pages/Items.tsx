@@ -20,9 +20,19 @@ export type ItemsResponse = {
 	items: Item[];
 }
 
-export function nameRecord(response: ItemsResponse | null, flip: boolean): Record<string, string> {
-    const items: { [id: string]: string } = {};
-    if (response?.items && flip) response?.items.forEach(item => items[item.id] = item.name.toLowerCase());
-	if (response?.items && !flip) response?.items.forEach(item => items[item.name.toLowerCase()] = item.id);
-    return items;
+export function nameMapper(response: ItemsResponse): (val: string) => string {
+	const nameToId = response.items.reduce((acc, item) => {
+		acc[item.name.toLowerCase()] = item.id;
+		return acc;
+	}, {} as Record<string, string>);
+	const idToName = response.items.reduce((acc, item) => {
+		acc[item.id] = item.name.toLowerCase();
+		return acc;
+	}, {} as Record<string, string>);
+
+    return (val: string) => {
+		if (nameToId[val.toLowerCase()] != undefined) return nameToId[val];
+		else if (idToName[val] != undefined) return idToName[val];
+		return val;
+	};
 }
