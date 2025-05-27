@@ -19,7 +19,7 @@ export function loadJSON<R>(url: string): [data: R | null, error: string] {
 }
 
 export function money(v: number | string): number {
-    return Number(Number(v).toFixed(2));
+    return Number(Number(v).toFixed(0));
 }
 
 export function capitalize(s: string): string {
@@ -33,4 +33,3 @@ export function capitalize(s: string): string {
     }
     return r;
 }
-

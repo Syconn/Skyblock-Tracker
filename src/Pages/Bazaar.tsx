@@ -33,8 +33,16 @@ export type BazarResponse = {
     };
 }
 
-export function generateBazarFlips(bazaar: BazarResponse, budget: number, minOrders: number, minVolume: number, minWeekly: number, mapper: (val: string) => string): Item[] {
-    return Object.entries(bazaar.products).map<Item>(v => product(mapper(v[0]), v[1].quick_status.sellPrice, v[1].quick_status.buyPrice, v[1].quick_status, Math.floor(budget / v[1].quick_status.sellPrice)))
+export function instaSellPrice(product: Product): number {
+    return product.sell_summary[0]?.pricePerUnit;
+}
+
+export function instaBuyPrice(product: Product): number {
+    return product.buy_summary[0]?.pricePerUnit
+}
+
+export function generateBazarFlips(bazaar: BazarResponse, budget: number, minOrders: number, minVolume: number, minWeekly: number, maxBuy: number, mapper: (val: string) => string): Item[] {
+    return Object.entries(bazaar.products).map<Item>(v => product(mapper(v[0]), instaSellPrice(v[1]), instaBuyPrice(v[1]), v[1].quick_status, Math.floor(budget / v[1].quick_status.sellPrice), maxBuy))
         .filter(v => v.expense <= budget).filter(v => v.data.buyOrders >= minOrders && v.data.sellOrders >= minOrders).filter(v => v.data.buyMovingWeek >= minWeekly && v.data.sellMovingWeek >= minWeekly)
         .filter(v => v.data.buyVolume >= minVolume && v.data.sellVolume >= minVolume);
 }

@@ -3,7 +3,7 @@ import './App.css'
 import { generateBazarFlips, type BazarResponse } from './Pages/Bazaar';
 import { nameMapper, type ItemsResponse } from './Pages/Items';
 import { loadJSON } from './util/Utils';
-import { ItemList } from './util/Components';
+import { BudgetInput, ItemList } from './util/Components';
 
 function App() {
 	const [bazaar, error1] = loadJSON<BazarResponse>("https://api.hypixel.net/v2/skyblock/bazaar");
@@ -14,18 +14,21 @@ function App() {
 	const [minOrders, setMinOrders] = useState(100);
 	const [minVolume, setMinVolume] = useState(10000);
 	const [minWeekly, setMinWeekly] = useState(70000);
+	const [maxBuy, setMaxBuy] = useState(10000);
 	
 	if (items == null || bazaar == null) return <div>Loading...</div>;
 	if (error1 || error1) return <div>Error: {error1.length ? error1 : error2}</div>;
 
-	const mapper = nameMapper(items);
+	// TODO
+	// - Percentage of Sales / Purchases
+	// - Bazaar/AH crafts
 
-	console.log(bazaar.products["DIAMOND"].quick_status)
+	const mapper = nameMapper(items);
 
 	return (
 		<>
-		<label>Budget: </label>
-		<input type='number' value={budget} onChange={v => setBudget(parseInt(v.target.value))}/>
+		{/* <input type='text' value={budget} onChange={v => setBudget(parseInt(v.target.value))}/> */}
+		<BudgetInput budget={budget} setBudget={setBudget}/>
 		<label> Bazaar</label>
 		<input type='checkbox' checked={useBazaar} onChange={e => setBazaar(e.target.checked)}/>
 		<label> Advanced</label>
@@ -40,12 +43,14 @@ function App() {
 				<input type='number' value={minVolume} onChange={v => setMinVolume(parseInt(v.target.value))}/>
 				<label> Min Weekly: </label>
 				<input type='number' value={minWeekly} onChange={v => setMinWeekly(parseInt(v.target.value))}/>
+				<label> Max Buy: </label>
+				<input type='number' value={maxBuy} onChange={v => setMaxBuy(parseInt(v.target.value))}/>
 				<hr/>
 				</>
 			)}
 		</div>
 		<div>
-			<ItemList items={generateBazarFlips(bazaar, budget, minOrders, minVolume, minWeekly, mapper)} type={'Bazaar'} number={10} />
+			{useBazaar && <ItemList items={generateBazarFlips(bazaar, budget, minOrders, minVolume, minWeekly, maxBuy, mapper)} type={'Bazaar'} number={10}/>}
 		</div>
 		</>
 	);

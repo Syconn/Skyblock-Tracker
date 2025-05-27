@@ -10,12 +10,21 @@ export type Item = {
     data: QuickStatus;
 }
 
-export function product(name: string, expense: number, revenue: number, data: QuickStatus, count: number): Item {
-    return {"name": name, "expense": expense, "revenue": revenue, "profit": money(revenue - expense) * count, "data": data, "count": count};
+export function product(name: string, expense: number, revenue: number, data: QuickStatus, count: number, max: number): Item {
+    return {"name": name, "expense": expense, "revenue": revenue, "profit": money(revenue - expense) * Math.min(count, max), "data": data, "count": Math.min(count, max)};
 }
 
+export function BudgetInput({budget, setBudget}: {budget: number, setBudget: (b: number) => void}) {
+    return (
+        <div>
+        <input type="text" value={budget} onChange={v => setBudget(parseInt(v.target.value))}/>
+        <label> {"$" + budget.toLocaleString()}</label>
+        </div>
+    );
+};
+
 export function ItemList({items, type, number}: {items: Item[], type: string, number: number}) {
-    const list = items.sort((a, b) => b.profit - a.profit).slice(0, Math.min(number + 1, items.length));
+    const list = items.sort((a, b) => b.profit - a.profit).slice(0, Math.min(number + 2, items.length));
     return (
         <>
         <label>{"Best " + number + " " + type + " Flips"}</label>
