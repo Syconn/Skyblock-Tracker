@@ -37,3 +37,11 @@ export function ItemList({items, type, number}: {items: Item[], type: string, nu
         </>
     );
 }
+
+export function ItemDisplay({item}: {item: Item}) {
+    return (
+        <>
+        <dt key={item.data.productId}>{item.name}</dt>
+        </>
+    )
+}

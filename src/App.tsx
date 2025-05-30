@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import './App.css'
-import { generateBazarFlips, type BazarResponse } from './Pages/Bazaar';
+import { generateBazaarCrafts, generateBazaarFlips, type BazarResponse, type NEUItem, type NEUResponse } from './Pages/Bazaar';
 import { nameMapper, type ItemsResponse } from './Pages/Items';
-import { loadJSON } from './util/Utils';
 import { BudgetInput, ItemList } from './util/Components';
+import { loadJSON } from './util/Utils';
 
 function App() {
 	const [bazaar, error1] = loadJSON<BazarResponse>("https://api.hypixel.net/v2/skyblock/bazaar");
 	const [items, error2] = loadJSON<ItemsResponse>("https://api.hypixel.net/v2/resources/skyblock/items");
+	const [crafts, error3] = loadJSON<NEUResponse>("crafts.json");
+
 	const [budget, setBudget] = useState(1000);
 	const [useBazaar, setBazaar] = useState(true);
 	const [advanced, setAdvanced] = useState(false);
@@ -16,8 +18,9 @@ function App() {
 	const [minWeekly, setMinWeekly] = useState(70000);
 	const [maxBuy, setMaxBuy] = useState(10000);
 	
-	if (items == null || bazaar == null) return <div>Loading...</div>;
-	if (error1 || error1) return <div>Error: {error1.length ? error1 : error2}</div>;
+	if (items == null || bazaar == null || crafts == null) return <div>Loading...</div>;
+	if (error1 || error1 || error2) return <div>Error: {error1.length ? error1 : error2.length ? error2 : error3}</div>;
+
 
 	// TODO
 	// - Percentage of Sales / Purchases
@@ -27,7 +30,6 @@ function App() {
 
 	return (
 		<>
-		{/* <input type='text' value={budget} onChange={v => setBudget(parseInt(v.target.value))}/> */}
 		<BudgetInput budget={budget} setBudget={setBudget}/>
 		<label> Bazaar</label>
 		<input type='checkbox' checked={useBazaar} onChange={e => setBazaar(e.target.checked)}/>
@@ -50,8 +52,9 @@ function App() {
 			)}
 		</div>
 		<div>
-			{useBazaar && <ItemList items={generateBazarFlips(bazaar, budget, minOrders, minVolume, minWeekly, maxBuy, mapper)} type={'Bazaar'} number={10}/>}
+			{useBazaar && <ItemList items={generateBazaarFlips(bazaar, budget, minOrders, minVolume, minWeekly, maxBuy, mapper)} type={'Bazaar'} number={10}/>}
 		</div>
+		{crafts === null && <label>Loading Crafts</label>}
 		</>
 	);
 }
